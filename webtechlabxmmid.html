@@ -1,0 +1,204 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>Two Articles with Separate Comment Sections</title>
+  <style>
+    body { font-family: Arial; margin: 20px; background:#f2f2f2; }
+    .container { background:white; padding:20px; border-radius:8px; max-width:800px; margin:auto; margin-bottom:30px; }
+    .box { border: 1px solid #ccc; padding: 10px; margin-top: 10px; background:#fafafa; border-radius:5px; }
+    .error { color: red; font-size: 14px; }
+    .star { font-size: 22px; cursor: pointer; color: gray; }
+    .star.selected { color: gold; }
+    .stats { background:#e8f0ff; padding:10px; border-radius:5px; margin-bottom:20px; }
+  </style>
+</head>
+<body>
+
+<!-- ARTICLE 1 -->
+<div class="container">
+<h2>Article 1: My Tech Article</h2>
+<p>hi this is my first article. i dont know much but this article is about technology. new phone coming and peoples are buying it. i think technology is good but also confusing lol.</p>
+
+<div class="stats">
+  <p><b>Total Comments:</b> <span id="total1">0</span></p>
+  <p><b>Average Rating:</b> <span id="avg1">0</span></p>
+</div>
+
+<h3>Write a Comment</h3>
+<form id="form1">
+  <label><b>Name (Required)</b></label><br>
+  <input type="text" id="name1"><br>
+  <p id="nameErr1" class="error"></p>
+
+  <label><b>Email (Optional)</b></label><br>
+  <input type="text" id="email1"><br>
+  <p id="emailErr1" class="error"></p>
+
+  <label><b>Your Comment (Required)</b></label><br>
+  <textarea id="comment1" rows="3"></textarea><br>
+  <p id="commentErr1" class="error"></p>
+
+  <label><b>Rating (Optional)</b></label><br>
+  <span class="star star1" data-value="1">★</span>
+  <span class="star star1" data-value="2">★</span>
+  <span class="star star1" data-value="3">★</span>
+  <span class="star star1" data-value="4">★</span>
+  <span class="star star1" data-value="5">★</span>
+  <p>Selected Rating: <span id="rate1">0</span></p>
+
+  <button type="submit">Submit</button>
+</form>
+
+<h3>All Comments</h3>
+<div id="list1"></div>
+</div>
+
+<!-- ARTICLE 2 -->
+<div class="container">
+<h2>Article 2: My World News Article</h2>
+<p>this is my second article. i am not good at writing but some news happening in world. people talking about weather and some places raining too much. i just wrote what i know.</p>
+
+<div class="stats">
+  <p><b>Total Comments:</b> <span id="total2">0</span></p>
+  <p><b>Average Rating:</b> <span id="avg2">0</span></p>
+</div>
+
+<h3>Write a Comment</h3>
+<form id="form2">
+  <label><b>Name (Required)</b></label><br>
+  <input type="text" id="name2"><br>
+  <p id="nameErr2" class="error"></p>
+
+  <label><b>Email (Optional)</b></label><br>
+  <input type="text" id="email2"><br>
+  <p id="emailErr2" class="error"></p>
+
+  <label><b>Your Comment (Required)</b></label><br>
+  <textarea id="comment2" rows="3"></textarea><br>
+  <p id="commentErr2" class="error"></p>
+
+  <label><b>Rating (Optional)</b></label><br>
+  <span class="star star2" data-value="1">★</span>
+  <span class="star star2" data-value="2">★</span>
+  <span class="star star2" data-value="3">★</span>
+  <span class="star star2" data-value="4">★</span>
+  <span class="star star2" data-value="5">★</span>
+  <p>Selected Rating: <span id="rate2">0</span></p>
+
+  <button type="submit">Submit</button>
+</form>
+
+<h3>All Comments</h3>
+<div id="list2"></div>
+</div>
+
+<script>
+  // Two separate arrays for two articles
+  let comments1 = [];
+  let comments2 = [];
+  let rating1 = 0;
+  let rating2 = 0;
+
+  // STAR SELECT FOR ARTICLE 1
+  document.querySelectorAll('.star1').forEach(star => {
+    star.onclick = function() {
+      rating1 = parseInt(this.dataset.value);
+      document.getElementById('rate1').innerText = rating1;
+
+      document.querySelectorAll('.star1').forEach(s => s.classList.remove('selected'));
+      for (let i = 0; i < rating1; i++) {
+        document.querySelectorAll('.star1')[i].classList.add('selected');
+      }
+    };
+  });
+
+  // STAR SELECT FOR ARTICLE 2
+  document.querySelectorAll('.star2').forEach(star => {
+    star.onclick = function() {
+      rating2 = parseInt(this.dataset.value);
+      document.getElementById('rate2').innerText = rating2;
+
+      document.querySelectorAll('.star2').forEach(s => s.classList.remove('selected'));
+      for (let i = 0; i < rating2; i++) {
+        document.querySelectorAll('.star2')[i].classList.add('selected');
+      }
+    };
+  });
+
+  // FORM SUBMIT FOR ARTICLE 1
+  document.getElementById('form1').onsubmit = function(e) {
+    e.preventDefault();
+
+    let name = document.getElementById('name1').value.trim();
+    let email = document.getElementById('email1').value.trim();
+    let comment = document.getElementById('comment1').value.trim();
+
+    let ok = true;
+
+    if (name.length < 2 || name.length > 50) { document.getElementById('nameErr1').innerText = "Name should be between 2 and 50 characters"; ok = false; }
+    else document.getElementById('nameErr1').innerText = "";
+
+    if (email.length > 0 && !email.includes('@')) { document.getElementById('emailErr1').innerText = "Please enter a valid email address"; ok = false; }
+    else document.getElementById('emailErr1').innerText = "";
+
+    if (comment.length < 10 || comment.length > 500) { document.getElementById('commentErr1').innerText = "Comment should between 10 and 500 characters"; ok = false; }
+    else document.getElementById('commentErr1').innerText = "";
+
+    if (!ok) return;
+
+    comments1.push({ name, email, comment, rating: rating1 });
+
+    updateStats1();
+    showComments1();
+
+    document.getElementById('form1').reset();
+    rating1 = 0;
+    document.getElementById('rate1').innerText = 0;
+    document.querySelectorAll('.star1').forEach(s => s.classList.remove('selected'));
+  };
+
+  // FORM SUBMIT FOR ARTICLE 2
+  document.getElementById('form2').onsubmit = function(e) {
+    e.preventDefault();
+
+    let name = document.getElementById('name2').value.trim();
+    let email = document.getElementById('email2').value.trim();
+    let comment = document.getElementById('comment2').value.trim();
+
+    let ok = true;
+
+    if (name.length < 2 || name.length > 50) { document.getElementById('nameErr2').innerText = "Name should be between 2 and 50 characters"; ok = false; }
+    else document.getElementById('nameErr2').innerText = "";
+
+    if (email.length > 0 && !email.includes('@')) { document.getElementById('emailErr2').innerText = "Please enter a valid email address"; ok = false; }
+    else document.getElementById('emailErr2').innerText = "";
+
+    if (comment.length < 10 || comment.length > 500) { document.getElementById('commentErr2').innerText = "Comment should between 10 and 500 characters"; ok = false; }
+    else document.getElementById('commentErr2').innerText = "";
+
+    if (!ok) return;
+
+    comments2.push({ name, email, comment, rating: rating2 });
+
+    updateStats2();
+    showComments2();
+
+    document.getElementById('form2').reset();
+    rating2 = 0;
+    document.getElementById('rate2').innerText = 0;
+    document.querySelectorAll('.star2').forEach(s => s.classList.remove('selected'));
+  };
+
+  // UPDATE STATS FOR ARTICLE 1
+  function updateStats1() {
+    document.getElementById('total1').innerText = comments1.length;
+
+    let ratings = comments1.filter(c => c.rating > 0).map(c => c.rating);
+    let avg = ratings.length ? (ratings.reduce((a,b)=>a+b)/ratings.length).toFixed(1) : 0;
+
+    document.getElementById('avg1').innerText = avg;
+  }
+
+  // SHOW COMMENTS FOR ARTICLE 1
+  function showComments1() {
+    let box = document.getElementById('list1');
